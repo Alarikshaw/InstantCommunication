@@ -1,4 +1,4 @@
-import type { ProjectConfig } from '/#/config';
+import type { ProjectConfig } from '/@/types/config';
 
 import { computed, unref } from 'vue';
 
@@ -15,8 +15,6 @@ const getRootSetting = computed((): RootSetting => appStore.getProjectConfig);
 const getPageLoading = computed(() => appStore.getPageLoading);
 
 const getOpenKeepAlive = computed(() => unref(getRootSetting).openKeepAlive);
-
-const getSettingButtonPosition = computed(() => unref(getRootSetting).settingButtonPosition);
 
 const getCanEmbedIFramePage = computed(() => unref(getRootSetting).canEmbedIFramePage);
 
@@ -35,8 +33,6 @@ const getUseErrorHandle = computed(() => unref(getRootSetting).useErrorHandle);
 const getShowFooter = computed(() => unref(getRootSetting).showFooter);
 
 const getShowBreadCrumb = computed(() => unref(getRootSetting).showBreadCrumb);
-
-const getThemeColor = computed(() => unref(getRootSetting).themeColor);
 
 const getShowBreadCrumbIcon = computed(() => unref(getRootSetting).showBreadCrumbIcon);
 
@@ -60,7 +56,6 @@ export function useRootSetting() {
   return {
     setRootSetting,
 
-    getSettingButtonPosition,
     getFullContent,
     getColorWeak,
     getGrayMode,
@@ -79,6 +74,5 @@ export function useRootSetting() {
     getShowFooter,
     getContentMode,
     getLockTime,
-    getThemeColor,
   };
 }

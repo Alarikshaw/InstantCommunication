@@ -1,175 +1,262 @@
 <template>
-  <div
-    :class="prefixCls"
-    class="relative w-full h-full px-4"
-  >
-    <div class="container relative h-full py-2 mx-auto sm:px-10">
-      <div class="flex h-full">
-        <div class="chat-login-auto-form h-full xl:h-auto flex py-5 xl:py-0 xl:my-0 w-full xl:w-6/12">
-          <div class="chat-login-auto ">
-            <LoginForm />
-          </div>
+  <div class="login">
+    <div class="login-mask" />
+    <div class="login-form-wrap">
+      <div class="mx-6 login-form">
+        <div class="px-2 py-10 login-form__content">
+          <header>
+            <h1>InstantCommunication</h1>
+          </header>
+          <Tabs
+            @change="changeType"
+            class="login-tab"
+          >
+            <TabPane
+              key="login"
+              tab="登录"
+            > </TabPane>
+            <TabPane
+              key="register"
+              tab="注册"
+              force-render
+            > </TabPane>
+          </Tabs>
+          <Form
+            class="mx-auto mt-10"
+            :model="state.formData"
+            :rules="state.formRules"
+            ref="formRef"
+          >
+            <FormItem name="userName">
+              <a-input
+                size="large"
+                v-model:value="state.formData.userName"
+                placeholder="userName"
+              />
+            </FormItem>
+            <FormItem name="password">
+              <a-input-password
+                size="large"
+                visibilityToggle
+                v-model:value="state.formData.password"
+                placeholder="password"
+              />
+            </FormItem>
+            <FormItem>
+              <a-button
+                type="primary"
+                size="large"
+                class="rounded-sm"
+                :block="true"
+                @click="login"
+                :loading="state.loading"
+              >{{ state.btnText }}</a-button>
+            </FormItem>
+          </Form>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import { defineComponent, reactive, ref, unref } from 'vue';
+import { Checkbox, Tabs, Form } from 'ant-design-vue';
 
-import { AppLogo } from '/@/components/Application';
-import LoginForm from './LoginForm.vue';
+import { Button } from '/@/components/Button';
+// import { BasicDragVerify, DragVerifyActionType } from '/@/components/Verify/index';
 
-import { useGlobSetting } from '/@/hooks/setting';
-import { useDesign } from '/@/hooks/web/useDesign';
-import { localeStore } from '/@/store/modules/locale';
+import { userStore } from '/@/store/modules/user';
+
+// import { appStore } from '/@/store/modules/app';
+import { useMessage } from '/@/hooks/web/useMessage';
 
 export default defineComponent({
-  name: 'Login',
   components: {
-    AppLogo,
-    LoginForm,
+    //  BasicDragVerify,
+    AButton: Button,
+    ACheckbox: Checkbox,
+    Tabs,
+    TabPane: Tabs.TabPane,
+    Form,
+    FormItem: Form.Item,
   },
   setup() {
-    const globSetting = useGlobSetting();
-    const { prefixCls } = useDesign('login');
-
+    const origin = {
+      titleType: 'login', // 当前状态
+      btnText: '登录', // 按钮相应文字
+      formData: {
+        userName: 'userName',
+        password: '123456',
+      }, // 表单数据
+      loading: false, // 加载状态
+      formRules: {
+        userName: [{ required: true, message: '填写用户名', trigger: 'blur' }],
+        password: [{ required: true, message: '输入密码', trigger: 'blur' }],
+      }, // 表单校验
+    };
+    const state = reactive(origin);
+    // 提示信息
+    const { createMessage } = useMessage();
+    async function changeType(type: string) {
+      state.titleType = type;
+      if (state.titleType === 'login') {
+        state.btnText = '登录';
+      } else if (state.titleType === 'register') {
+        state.btnText = '注册';
+      }
+    }
+    const formRef = ref<any>(null);
+    const { notification } = useMessage();
+    /**
+     * 登录
+     */
+    async function handleLogin() {
+      const form = unref(formRef);
+      if (!form) return;
+      let data = await form.validate();
+      //   state.loading = true;
+      if (state.titleType === 'register') {
+        data.createTime = new Date().valueOf();
+        try {
+          const userInfo = await userStore.getRegister(data);
+          if (userInfo.code === 0) {
+            notification.success({
+              message: '注册成功',
+              description: '欢迎来访',
+              duration: 3,
+            });
+          } else {
+            notification.error({
+              message: '注册',
+              description: userInfo.msg,
+              duration: 3,
+            });
+          }
+        } catch (e) {
+          state.loading = false;
+          return e;
+        } finally {
+          state.loading = false;
+        }
+        return false;
+      } else {
+        state.loading = false;
+        try {
+          const userInfo = await userStore.login(data);
+          if (userInfo) {
+            notification.success({
+              message: '登录成功',
+              description: '欢迎回来',
+              duration: 3,
+            });
+          } else {
+            createMessage.error('密码错误');
+          }
+        } catch (error) {
+        } finally {
+          state.loading = false;
+        }
+      }
+    }
     return {
-      prefixCls,
-      title: computed(() => globSetting?.title ?? ''),
-      showLocale: localeStore.getShowPicker,
+      formRef,
+      login: handleLogin,
+      changeType,
+      state,
     };
   },
 });
 </script>
 <style lang="less">
-@prefix-cls: ~'@{namespace}-login';
-@logo-prefix-cls: ~'@{namespace}-app-logo';
-@countdown-prefix-cls: ~'@{namespace}-countdown-input';
+@import (reference) '../../../design/index.less';
 
-.@{prefix-cls} {
-  //   @media (max-width: @screen-xl) {
-  //     background: linear-gradient(180deg, #1c3faa, #1c3faa);
-  //   }
-
-  &::before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    // margin-left: -48%;
-    background-image: url(/@/assets/images/login-bg.jpg);
-    background-position: 100%;
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    min-width: 1400px;
-    min-height: 565px;
-    content: '';
-    // @media (max-width: @screen-xl) {
-    //   display: none;
-    // }
-  }
-
-  .@{logo-prefix-cls} {
-    position: absolute;
-    top: 12px;
-    height: 30px;
-
-    &__title {
-      font-size: 16px;
-      color: #fff;
-    }
-
-    img {
-      width: 32px;
-    }
-  }
-
-  .container {
-    .@{logo-prefix-cls} {
-      display: flex;
-      width: 60%;
-      height: 80px;
-
-      &__title {
-        font-size: 24px;
-        color: #fff;
-      }
-
-      img {
-        width: 48px;
-      }
-    }
-  }
-
-  &-sign-in-way {
-    .anticon {
-      font-size: 22px;
-      color: #888;
-      cursor: pointer;
-
-      &:hover {
-        color: @primary-color;
-      }
-    }
-  }
-  .@{countdown-prefix-cls} input {
-    min-width: unset;
-  }
-
-  .ant-divider-inner-text {
-    font-size: 12px;
-    color: @text-color-secondary;
-  }
+.login-form__locale {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 1;
 }
-.chat-login-auto-form {
+
+.login {
+  position: relative;
+  height: 100vh;
   width: 100%;
-  .chat-login-auto {
-    width: 100%;
-    display: flex;
+  min-width: 1200px;
+  background: url(../../../assets/images/login/bannerimgs.jpg) no-repeat;
+  background-size: 100% 100%;
+
+  &-mask {
+    display: none;
+    height: 100%;
+    //   background: url(../../../assets/images/login/login-in.png) no-repeat;
+    background-position: 30% 30%;
+    background-size: 80% 80%;
+
+    .respond-to(xlarge, { display: block;});
+  }
+
+  &-form {
     position: relative;
-    justify-content: center;
-    align-items: center;
-    .login-form {
+    bottom: 60px;
+    width: 400px;
+    background: @white;
+    //   border: 10px solid rgba(255, 255, 255, 0.5);
+
+    border-width: 0;
+    border-radius: 10px;
+    background-clip: padding-box;
+    .respond-to(xlarge, { margin: 0 120px 0 50px});
+
+    &-wrap {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: flex;
+      width: 100%;
+      height: 100%;
+      // height: 90%;
+      justify-content: center;
+      align-items: center;
+      .respond-to(xlarge, {
+        // justify-content: flex-end;
+          });
+    }
+
+    &__content.py-10 {
       position: relative;
-      bottom: 60px;
-      width: 400px;
-      background: padding-box rgb(255, 255, 255);
-      border-width: 0px;
-      border-radius: 10px;
-      .login-form-content {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        padding: 20px 0px 40px;
-        border: none;
-        border-radius: 2px;
-        .formTitle {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          h1 {
-            margin-bottom: 0px;
-            font-size: 24px;
-            text-align: center;
-          }
+      width: 100%;
+      height: 100%;
+      padding: 60px 0 40px 0;
+      border: 1px solid #999;
+      border: none;
+      border-radius: 2px;
+      padding-top: 20px;
+      .login-tab {
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 20px;
+      }
+      header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        img {
+          display: inline-block;
+          width: 48px;
         }
-        .login-tab {
-          width: 80%;
-          margin-left: auto;
-          margin-right: auto;
-          margin-top: 20px;
-          display: flex;
-          justify-content: center;
-          .ant-tabs-content-animated {
-            display: none;
-          }
+
+        h1 {
+          margin-bottom: 0;
+          font-size: 24px;
+          text-align: center;
         }
-        .chat-form {
-          width: 80%;
-          margin: 0 auto;
-        }
+      }
+
+      form {
+        width: 80%;
+        margin-top: 10px;
       }
     }
   }

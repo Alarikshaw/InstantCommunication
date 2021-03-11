@@ -5,6 +5,7 @@
     "moduleResolution": "node",
     "strict": true,
     "forceConsistentCasingInFileNames": true,
+    "jsx": "react",
     "baseUrl": ".",
     "esModuleInterop": true,
     "noUnusedLocals": true,

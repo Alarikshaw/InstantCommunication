@@ -6,25 +6,26 @@ import { resolve } from 'path';
 import { generateModifyVars } from './build/config/themeConfig';
 import { createProxy } from './build/vite/proxy';
 import { wrapperEnv } from './build/utils';
-import { createVitePlugins } from './build/vite/plugin';
-import { OUTPUT_DIR } from './build/constant';
 
+import globbyTransform from './build/vite/plugin/context/transform';
+import dynamicImportTransform from './build/vite/plugin/dynamicImport/index';
+
+import { isDevFn } from './build/utils';
+
+import { createVitePlugins } from './build/vite/plugin';
+
+const pkg = require('./package.json');
 function pathResolve(dir: string) {
   return resolve(__dirname, '.', dir);
 }
-
 export default ({ command, mode }: ConfigEnv): UserConfig => {
   const root = process.cwd();
-
   const env = loadEnv(mode, root);
-
-  // The boolean type read by loadEnv is a string. This function can be converted to boolean type
   const viteEnv = wrapperEnv(env);
-
   const { VITE_PORT, VITE_PUBLIC_PATH, VITE_PROXY, VITE_DROP_CONSOLE, VITE_LEGACY } = viteEnv;
-
+  console.log('VITE_PROXY', VITE_PROXY);
+  console.log('createProxy(VITE_PROXY)', createProxy(VITE_PROXY));
   const isBuild = command === 'build';
-
   return {
     base: VITE_PUBLIC_PATH,
     root,
@@ -45,16 +46,26 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
     server: {
       port: VITE_PORT,
       // Load proxy configuration from .env
-      proxy: createProxy(VITE_PROXY),
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3000',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, ''),
+        },
+        'socket.io': {
+          target: 'http://localhost:3000',
+          changeOrigin: true,
+          ws: true,
+        },
+      },
       hmr: {
         overlay: true,
       },
     },
-
     build: {
       cssCodeSplit: false,
       // minify: 'esbuild',
-      outDir: OUTPUT_DIR,
+      outDir: 'dist',
       polyfillDynamicImport: VITE_LEGACY,
       terserOptions: {
         compress: {
@@ -87,10 +98,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         },
       },
     },
-
-    // The vite plugin used by the project. The quantity is large, so it is separately extracted and managed
     plugins: createVitePlugins(viteEnv, isBuild),
-
     optimizeDeps: {
       // @iconify/iconify: The dependency is dynamically and virtually loaded by @purge-icons/generated, so it needs to be specified explicitly
       include: [
@@ -99,6 +107,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         'moment/dist/locale/zh-cn',
         'ant-design-vue/es/locale/en_US',
         'moment/dist/locale/eu',
+        'socket.io-client',
       ],
       exclude: ['vue-demi'],
     },

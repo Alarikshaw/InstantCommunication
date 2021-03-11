@@ -1,84 +1,97 @@
 <template>
-  <Layout :class="prefixCls">
-    <LayoutFeatures />
-    <LayoutHeader fixed v-if="getShowFullHeaderRef" />
-    <Layout
-      :class="{
-        'ant-layout-has-sider': getIsMixSidebar,
-      }"
-    >
-      <LayoutSideBar v-if="getShowSidebar || getIsMobile" />
-      <Layout :class="`${prefixCls}__main`">
-        <LayoutMultipleHeader />
-        <LayoutContent />
-        <LayoutFooter />
-      </Layout>
-    </Layout>
-  </Layout>
+  <!-- <div>
+        主体布局
+        <button @click="handleLoginOut">退出</button>
+    </div> -->
+  <div
+    class="chat"
+    :style="{
+      '--bg-image': `url('${imgSrc.src}')`,
+    }"
+  >
+    <div class="chat-form1">
+      <ChatTool></ChatTool>
+    </div>
+    <div class="chat-form2">
+      <ChatSearch></ChatSearch>
+    </div>
+  </div>
+  <img
+    class="background"
+    :src="imgSrc.src"
+    alt=""
+  />
 </template>
-
 <script lang="ts">
-  import { defineComponent } from 'vue';
-  import { Layout } from 'ant-design-vue';
-  import { createAsyncComponent } from '/@/utils/factory/createAsyncComponent';
-
-  import LayoutHeader from './header/index.vue';
-  import LayoutContent from './content/index.vue';
-  import LayoutSideBar from './sider/index.vue';
-  import LayoutMultipleHeader from './header/MultipleHeader.vue';
-
-  import { useHeaderSetting } from '/@/hooks/setting/useHeaderSetting';
-  import { useMenuSetting } from '/@/hooks/setting/useMenuSetting';
-  import { useDesign } from '/@/hooks/web/useDesign';
-
-  import { useAppInject } from '/@/hooks/web/useAppInject';
-
-  export default defineComponent({
-    name: 'DefaultLayout',
-    components: {
-      LayoutFeatures: createAsyncComponent(() => import('/@/layouts/default/feature/index.vue')),
-      LayoutFooter: createAsyncComponent(() => import('/@/layouts/default/footer/index.vue')),
-      LayoutHeader,
-      LayoutContent,
-      LayoutSideBar,
-      LayoutMultipleHeader,
-      Layout,
-    },
-    setup() {
-      const { prefixCls } = useDesign('default-layout');
-
-      const { getIsMobile } = useAppInject();
-
-      const { getShowFullHeaderRef } = useHeaderSetting();
-
-      const { getShowSidebar, getIsMixSidebar } = useMenuSetting();
-
-      return {
-        getShowFullHeaderRef,
-        getShowSidebar,
-        prefixCls,
-        getIsMobile,
-        getIsMixSidebar,
-      };
-    },
-  });
+import { defineComponent, reactive, onBeforeMount, watch } from 'vue';
+import { defaultImg } from './chatComponents/imgData';
+import ChatTool from '/@/layouts/default/chatComponents/ChatTool.vue';
+import ChatSearch from '/@/layouts/default/chatComponents/ChatSearch.vue';
+import { getTokenState } from '/@/utils/auth';
+import { userStore } from '/@/store/modules/user';
+import { chatStore } from '/@/store/chat/chatStore';
+export default defineComponent({
+  components: {
+    ChatTool,
+    ChatSearch,
+  },
+  name: 'Chat',
+  setup() {
+    let imgSrc = reactive({
+      src: '',
+    });
+    onBeforeMount(() => {
+      if (getTokenState()?.background) {
+        imgSrc.src = getTokenState().background;
+      } else {
+        imgSrc.src = defaultImg.src;
+      }
+    });
+    chatStore.connectSocket();
+    watch(
+      () => userStore.getUserInfoState,
+      (userInfo) => {
+        imgSrc.src = userInfo.background;
+      }
+    );
+    return {
+      imgSrc,
+    };
+  },
+});
 </script>
-<style lang="less">
-  @prefix-cls: ~'@{namespace}-default-layout';
-
-  .@{prefix-cls} {
-    display: flex;
-    width: 100%;
-    min-height: 100%;
-    background: @content-bg;
-    flex-direction: column;
-
-    > .ant-layout {
-      min-height: 100%;
-    }
-
-    &__main {
-      margin-left: 1px;
-    }
+<style lang="less" scoped>
+.chat {
+  font-size: 16px;
+  z-index: 999;
+  //   max-width: 1000px;
+  min-width: 300px;
+  width: 100%;
+  height: 80%;
+  //   max-height: 900px;
+  min-height: 470px;
+  position: relative;
+  margin: auto 20px;
+  box-shadow: 10px 20px 80px rgba(0, 0, 0, 0.8);
+  display: flex;
+  overflow: hidden;
+  margin: 0;
+  height: 100%;
+  .chat-form1 {
+    width: 100px;
+    height: 100%;
+    background-color: rgb(0, 0, 0, 0.7);
   }
+  .chat-form2 {
+    width: 230px;
+    padding: 10px;
+  }
+}
+.background {
+  position: absolute;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  min-width: 1100px;
+}
 </style>

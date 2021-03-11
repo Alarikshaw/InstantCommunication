@@ -1,4 +1,4 @@
-import type { HeaderSetting } from '/#/config';
+import type { HeaderSetting } from '/@/types/config';
 
 import { computed, unref } from 'vue';
 
@@ -16,7 +16,6 @@ const {
   getSplit,
   getShowHeaderTrigger,
   getIsSidebarType,
-  getIsMixSidebar,
   getIsTopMenu,
 } = useMenuSetting();
 const { getShowBreadCrumb, getShowLogo } = useRootSetting();
@@ -28,18 +27,13 @@ const getShowFullHeaderRef = computed(() => {
     !unref(getFullContent) &&
     unref(getShowMixHeaderRef) &&
     unref(getShowHeader) &&
-    !unref(getIsTopMenu) &&
-    !unref(getIsMixSidebar)
+    !unref(getIsTopMenu)
   );
 });
 
 const getShowInsetHeaderRef = computed(() => {
   const need = !unref(getFullContent) && unref(getShowHeader);
-  return (
-    (need && !unref(getShowMixHeaderRef)) ||
-    (need && unref(getIsTopMenu)) ||
-    (need && unref(getIsMixSidebar))
-  );
+  return (need && !unref(getShowMixHeaderRef)) || (need && unref(getIsTopMenu));
 });
 
 // Get header configuration
@@ -72,7 +66,7 @@ const getShowBread = computed(() => {
 });
 
 const getShowHeaderLogo = computed(() => {
-  return unref(getShowLogo) && !unref(getIsSidebarType) && !unref(getIsMixSidebar);
+  return unref(getShowLogo) && !unref(getIsSidebarType);
 });
 
 const getShowContent = computed(() => {

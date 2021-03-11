@@ -1,23 +1,15 @@
 import type { Router } from 'vue-router';
-
-import { useTransitionSetting } from '/@/hooks/setting/useTransitionSetting';
-
-import nProgress from 'nprogress';
-
-import { unref } from 'vue';
-
-const { getOpenNProgress } = useTransitionSetting();
-
+import NProgress from 'nprogress';
 export function createProgressGuard(router: Router) {
   router.beforeEach(async (to) => {
     if (to.meta.loaded) return true;
-    unref(getOpenNProgress) && nProgress.start();
+    NProgress.start();
     return true;
   });
 
   router.afterEach(async (to) => {
     if (to.meta.loaded) return true;
-    unref(getOpenNProgress) && nProgress.done();
+    NProgress.done();
     return true;
   });
 }

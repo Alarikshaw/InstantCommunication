@@ -1,10 +1,26 @@
+/**
+ * 基础路径
+ */
 export enum PageEnum {
-  // basic login path
+  /**
+   * 初始化数据库
+   */
+  BASE_INIT = '/init',
+  /**
+   * 基本登录路径
+   */
   BASE_LOGIN = '/login',
-  // basic home path
-  BASE_HOME = '/home',
-  // error page path
+  /**
+   * 基本路径
+   */
+  BASE_CHAT = '/chat',
+
+  /**
+   * 错误页面路径
+   */
   ERROR_PAGE = '/exception',
-  // error log page path
-  ERROR_LOG_PAGE = '/error-log/list',
+  /**
+   * /错误日志页面路径
+   */
+  ERROR_LOG_PAGE = '/exception/error-log',
 }

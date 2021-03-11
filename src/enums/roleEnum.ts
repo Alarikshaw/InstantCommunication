@@ -1,7 +1,4 @@
 export enum RoleEnum {
-  // super admin
-  SUPER = 'super',
-
-  // tester
-  TEST = 'test',
+  _CHAT_FORMAL = 'InstantCommunication',
+  _TEST = 'test',
 }

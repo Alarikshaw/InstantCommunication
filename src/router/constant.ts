@@ -1,18 +1,17 @@
 import type { AppRouteRecordRaw } from '/@/router/types';
+
 import ParentLayout from '/@/layouts/page/ParentView.vue';
-import { t } from '/@/hooks/web/useI18n';
 
-export const REDIRECT_NAME = 'Redirect';
-
-export const EXCEPTION_COMPONENT = () => import('../views/sys/exception/Exception.vue');
+const EXCEPTION_COMPONENT = () => import('/@/views/sys/exception/Exception.vue');
 
 /**
- * @description: default layout
+ * @description: 默认布局 default layout
  */
 export const LAYOUT = () => import('/@/layouts/default/index.vue');
 
 /**
- * @description: page-layout
+ * 页面布局
+ * @param name
  */
 export const getParentLayout = (name: string) => {
   return () =>
@@ -24,7 +23,7 @@ export const getParentLayout = (name: string) => {
     });
 };
 
-// 404 on a page
+// 404 页面
 export const PAGE_NOT_FOUND_ROUTE: AppRouteRecordRaw = {
   path: '/:path(.*)*',
   name: 'ErrorPage',
@@ -46,6 +45,8 @@ export const PAGE_NOT_FOUND_ROUTE: AppRouteRecordRaw = {
   ],
 };
 
+export const REDIRECT_NAME = 'Redirect';
+
 export const REDIRECT_ROUTE: AppRouteRecordRaw = {
   path: '/redirect',
   name: REDIRECT_NAME,
@@ -61,27 +62,6 @@ export const REDIRECT_ROUTE: AppRouteRecordRaw = {
       component: () => import('/@/views/sys/redirect/index.vue'),
       meta: {
         title: REDIRECT_NAME,
-        hideBreadcrumb: true,
-      },
-    },
-  ],
-};
-
-export const ERROR_LOG_ROUTE: AppRouteRecordRaw = {
-  path: '/error-log',
-  name: 'errorLog',
-  component: LAYOUT,
-  meta: {
-    title: 'ErrorLog',
-    hideBreadcrumb: true,
-  },
-  children: [
-    {
-      path: 'list',
-      name: 'errorLogList',
-      component: () => import('/@/views/sys/error-log/index.vue'),
-      meta: {
-        title: t('routes.basic.errorLogList'),
         hideBreadcrumb: true,
       },
     },

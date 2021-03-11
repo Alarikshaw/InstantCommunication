@@ -1,71 +1,44 @@
-import type { GlobEnvConfig } from '/#/config';
+import type { GlobEnvConfig } from '/@/types/config';
 
-import { useGlobSetting } from '/@/hooks/setting';
-import pkg from '../../package.json';
-import { getConfigFileName } from '../../build/getConfigFileName';
-
-export function getCommonStoragePrefix() {
-  const globSetting = useGlobSetting();
-  return `${globSetting.shortName}__${getEnv()}`.toUpperCase();
-}
-
-// Generate cache key according to version
-export function getStorageShortName() {
-  return `${getCommonStoragePrefix()}${`__${pkg.version}`}__`.toUpperCase();
-}
-
-export function getAppEnvConfig() {
-  const ENV_NAME = getConfigFileName(import.meta.env);
-
-  const ENV = ((isDevMode()
-    ? // Get the global configuration (the configuration will be extracted independently when packaging)
-      ((import.meta.env as unknown) as GlobEnvConfig)
-    : window[ENV_NAME as any]) as unknown) as GlobEnvConfig;
-  return ENV;
-}
+export const getGlobEnvConfig = (): GlobEnvConfig => {
+  const env = import.meta.env;
+  return (env as unknown) as GlobEnvConfig;
+};
 
 /**
- * @description: Development model
+ * @description: 开发模式
  */
 export const devMode = 'development';
 
 /**
- * @description: Production mode
+ * @description: 生产模式
  */
 export const prodMode = 'production';
 
 /**
- * @description: Get environment variables
+ * @description: 获取环境变量
  * @returns:
  * @example:
  */
-export function getEnv(): string {
-  return import.meta.env.MODE;
-}
+export const getEnv = (): string => import.meta.env.MODE;
 
 /**
- * @description: Is it a development mode
+ * @description: 是否是开发模式
  * @returns:
  * @example:
  */
-export function isDevMode(): boolean {
-  return import.meta.env.DEV;
-}
+export const isDevMode = (): boolean => import.meta.env.DEV;
 
 /**
- * @description: Is it a production mode
+ * @description: 是否是生产模式模式
  * @returns:
  * @example:
  */
-export function isProdMode(): boolean {
-  return import.meta.env.PROD;
-}
+export const isProdMode = (): boolean => import.meta.env.PROD;
 
 /**
- * @description: Whether to open mock
+ * @description: 是否开启mock
  * @returns:
  * @example:
  */
-export function isUseMock(): boolean {
-  return import.meta.env.VITE_USE_MOCK === 'true';
-}
+export const isUseMock = (): boolean => import.meta.env.VITE_USE_MOCK === 'true';

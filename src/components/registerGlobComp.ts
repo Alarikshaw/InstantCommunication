@@ -3,14 +3,84 @@ import { Button } from './Button';
 import {
   // Need
   Button as AntButton,
-} from 'ant-design-vue';
 
-import { App } from 'vue';
+  // Optional
+  Select,
+  Alert,
+  Checkbox,
+  DatePicker,
+  Radio,
+  Switch,
+  Card,
+  List,
+  Tabs,
+  Descriptions,
+  Tree,
+  Table,
+  Divider,
+  Modal,
+  Drawer,
+  Dropdown,
+  Tag,
+  Tooltip,
+  Badge,
+  Popover,
+  Upload,
+  Transfer,
+  Steps,
+  PageHeader,
+  Result,
+  Empty,
+  Avatar,
+  Menu,
+  Breadcrumb,
+} from 'ant-design-vue';
+import { getApp } from '/@/setup/App';
 
 const compList = [Icon, Button, AntButton.Group];
 
-export function registerGlobComp(app: App) {
+// Fix hmr multiple registered components
+let registered = false;
+export function registerGlobComp() {
+  if (registered) return;
   compList.forEach((comp: any) => {
-    app.component(comp.name || comp.displayName, comp);
+    getApp().component(comp.name, comp);
   });
+
+  registered = true;
+
+  // Optional
+  // Why register here： The main reason for registering here is not to increase the size of the first screen code
+  // If you need to customize global components, you can write here
+  // If you don’t need it, you can delete it
+  getApp()
+    .use(Select)
+    .use(Alert)
+    .use(Breadcrumb)
+    .use(Checkbox)
+    .use(DatePicker)
+    .use(Radio)
+    .use(Switch)
+    .use(Card)
+    .use(List)
+    .use(Descriptions)
+    .use(Tree)
+    .use(Table)
+    .use(Divider)
+    .use(Modal)
+    .use(Drawer)
+    .use(Dropdown)
+    .use(Tag)
+    .use(Tooltip)
+    .use(Badge)
+    .use(Popover)
+    .use(Upload)
+    .use(Transfer)
+    .use(Steps)
+    .use(PageHeader)
+    .use(Result)
+    .use(Empty)
+    .use(Avatar)
+    .use(Menu)
+    .use(Tabs);
 }

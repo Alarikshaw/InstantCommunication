@@ -1,74 +1,52 @@
-import type { ProjectConfig } from '/#/config';
-
-import { VuexModule, getModule, Module, Mutation, Action } from 'vuex-module-decorators';
-import store from '/@/store';
-
-import { PROJ_CFG_KEY } from '/@/enums/cacheEnum';
-
-import { hotModuleUnregisterModule } from '/@/utils/helper/vuexHelper';
-import { Persistent } from '/@/utils/cache/persistent';
-import { deepMerge } from '/@/utils';
-
+import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import { resetRouter } from '/@/router';
-import { permissionStore } from './permission';
-import { tabStore } from './tab';
-
+import type { ProjectConfig } from '/@/types/config';
+import { hotModuleUnregisterModule } from '/@/utils/helper/vuexHelper';
+import { setLocal, getLocal, clearSession, clearLocal } from '/@/utils/helper/persistent';
+import store from '/@/store';
+import { PROJ_CFG_KEY } from '/@/enums/cacheEnum';
 import { userStore } from './user';
-
-export interface LockInfo {
-  pwd: string | undefined;
-  isLock: boolean;
-}
-
+import { permissionStore } from './permission';
 let timeId: TimeoutHandle;
 const NAME = 'app';
 hotModuleUnregisterModule(NAME);
 @Module({ dynamic: true, namespaced: true, store, name: NAME })
-export default class App extends VuexModule {
-  // Page loading status
+class App extends VuexModule {
+  /**
+   * 页面加载状态
+   */
   private pageLoadingState = false;
 
   // project config
-  private projectConfigState: ProjectConfig | null = Persistent.getLocal(PROJ_CFG_KEY);
-
-  // set main overflow hidden
-  private lockMainScrollState = false;
-
+  private projectConfigState: ProjectConfig | null = getLocal(PROJ_CFG_KEY);
+  /**
+   * 获取页面加载状态
+   */
   get getPageLoading() {
     return this.pageLoadingState;
-  }
-
-  get getLockMainScrollState() {
-    return this.lockMainScrollState;
   }
 
   get getProjectConfig(): ProjectConfig {
     return this.projectConfigState || ({} as ProjectConfig);
   }
-
+  /**
+   * 改变页面加载状态
+   * @param loading
+   */
   @Mutation
   commitPageLoadingState(loading: boolean): void {
     this.pageLoadingState = loading;
   }
 
-  @Mutation
-  commitLockMainScrollState(lock: boolean): void {
-    this.lockMainScrollState = lock;
-  }
-
-  @Mutation
-  commitProjectConfigState(proCfg: DeepPartial<ProjectConfig>): void {
-    this.projectConfigState = deepMerge(this.projectConfigState || {}, proCfg);
-    Persistent.setLocal(PROJ_CFG_KEY, this.projectConfigState);
-  }
-
+  /**
+   * 重载
+   */
   @Action
   async resumeAllState() {
     resetRouter();
-    Persistent.clearAll();
-
+    clearSession();
+    clearLocal();
     permissionStore.commitResetState();
-    tabStore.commitResetState();
     userStore.commitResetState();
   }
 
@@ -86,4 +64,5 @@ export default class App extends VuexModule {
     }
   }
 }
+
 export const appStore = getModule<App>(App);

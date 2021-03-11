@@ -1,3 +1,7 @@
+/*
+ * @Author: Alarikshaw
+ * @Description:
+ */
 module.exports = {
   printWidth: 100,
   tabWidth: 2,
@@ -17,4 +21,12 @@ module.exports = {
   htmlWhitespaceSensitivity: 'strict',
   endOfLine: 'lf',
   rangeStart: 0,
+  overrides: [
+    {
+      files: '*.md',
+      options: {
+        tabWidth: 2,
+      },
+    },
+  ],
 };

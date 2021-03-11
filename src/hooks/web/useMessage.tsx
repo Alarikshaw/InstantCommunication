@@ -4,7 +4,6 @@ import { Modal, message as Message, notification } from 'ant-design-vue';
 import { InfoCircleFilled, CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons-vue';
 
 import { ArgsProps, ConfigProps } from 'ant-design-vue/lib/notification';
-import { useI18n } from './useI18n';
 
 export interface NotifyApi {
   info(config: ArgsProps): void;
@@ -60,20 +59,17 @@ function createConfirm(options: ModalOptionsEx): ConfirmOptions {
     icon: getIcon(iconType),
     ...options,
   };
-  return (Modal.confirm(opt) as unknown) as ConfirmOptions;
+  return Modal.confirm(opt) as any;
 }
 
-const getBaseOptions = () => {
-  const { t } = useI18n();
-  return {
-    okText: t('common.okText'),
-    centered: true,
-  };
+const baseOptions = {
+  okText: '确定',
+  centered: true,
 };
 
 function createModalOptions(options: ModalOptionsPartial, icon: string): ModalOptionsPartial {
   return {
-    ...getBaseOptions(),
+    ...baseOptions,
     ...options,
     content: renderContent(options),
     icon: getIcon(icon),

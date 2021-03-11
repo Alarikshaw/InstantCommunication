@@ -1,12 +1,12 @@
 import { isDevMode } from '/@/utils/env';
 
 // System default cache time, in seconds
-export const DEFAULT_CACHE_TIME = 60 * 60 * 24 * 7;
+export const DEFAULT_CACHE_TIME = 60;
 
 // aes encryption key
 export const cacheCipher = {
-  key: '_11111000001111@',
-  iv: '@11111000001111_',
+  key: '_12345678901234@',
+  iv: '@12345678901234_',
 };
 
 // Whether the system cache is encrypted using aes

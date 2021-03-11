@@ -1,12 +1,15 @@
 import type { App } from 'vue';
-import { createStore } from 'vuex';
-import { config } from 'vuex-module-decorators';
-import { isDevMode } from '/@/utils/env';
 
+/**
+ * 创建记录器
+ */
+import { createStore } from 'vuex';
+
+import { config } from 'vuex-module-decorators';
 config.rawError = true;
 
 const store = createStore({
-  strict: isDevMode(),
+  strict: false,
 });
 
 export function setupStore(app: App<Element>) {

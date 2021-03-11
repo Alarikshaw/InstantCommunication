@@ -22,12 +22,6 @@ export enum ThemeEnum {
   LIGHT = 'light',
 }
 
-export enum SettingButtonPositionEnum {
-  AUTO = 'auto',
-  HEADER = 'header',
-  FIXED = 'fixed',
-}
-
 /**
  * 权限模式
  */

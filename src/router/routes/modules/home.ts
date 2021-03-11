@@ -1,24 +1,23 @@
 import type { AppRouteModule } from '/@/router/types';
 
 import { LAYOUT } from '/@/router/constant';
-import { t } from '/@/hooks/web/useI18n';
 
 const dashboard: AppRouteModule = {
-  path: '/home',
-  name: 'Home',
+  path: '/chat',
+  name: 'Chat',
   component: LAYOUT,
-  redirect: '/home/welcome',
+  redirect: '/chat/foamal',
   meta: {
-    icon: 'ion:home-outline',
-    title: t('routes.dashboard.welcome'),
+    icon: 'bx:bx-home',
+    title: '首页',
   },
   children: [
     {
-      path: 'welcome',
-      name: 'Welcome',
-      component: () => import('/@/views/dashboard/welcome/index.vue'),
+      path: 'foamal',
+      name: 'foamal',
+      component: () => import('/@/layouts/default/index.vue'),
       meta: {
-        title: t('routes.dashboard.welcome'),
+        title: '首页',
         affix: true,
         icon: 'bx:bx-home',
       },
