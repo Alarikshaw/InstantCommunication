@@ -23,8 +23,8 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
   const env = loadEnv(mode, root);
   const viteEnv = wrapperEnv(env);
   const { VITE_PORT, VITE_PUBLIC_PATH, VITE_PROXY, VITE_DROP_CONSOLE, VITE_LEGACY } = viteEnv;
-  console.log('VITE_PROXY', VITE_PROXY);
-  console.log('createProxy(VITE_PROXY)', createProxy(VITE_PROXY));
+  //   console.log('VITE_PROXY', VITE_PROXY);
+  //   console.log('createProxy(VITE_PROXY)', createProxy(VITE_PROXY));
   const isBuild = command === 'build';
   return {
     base: VITE_PUBLIC_PATH,
@@ -48,14 +48,9 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       // Load proxy configuration from .env
       proxy: {
         '/api': {
-          target: 'http://localhost:3000',
+          target: 'http://localhost:8888',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
-        },
-        'socket.io': {
-          target: 'http://localhost:3000',
-          changeOrigin: true,
-          ws: true,
         },
       },
       hmr: {

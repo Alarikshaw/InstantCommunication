@@ -31,3 +31,18 @@ interface RepUserReg {
   data: object;
   msg: string;
 }
+
+interface ResponseParam {
+  code?: number;
+  data?: any;
+  msg?: string;
+}
+
+interface InitDBForm {
+  mysql: string;
+  host: string;
+  port: string;
+  userName: string;
+  password: string;
+  dbName: string;
+}

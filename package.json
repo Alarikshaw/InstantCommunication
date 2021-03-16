@@ -1,6 +1,6 @@
 {
-  "name": "chat-form",
-  "version": "2.0.1-rc.01",
+  "name": "instant-communication",
+  "version": "0.0.1-rc.01",
   "scripts": {
     "bootstrap": "yarn install",
     "dev": "vite",
