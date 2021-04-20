@@ -1,3 +1,3 @@
-# produce-admin
+# nuxt-produce-admin
 
 Vue3 + TypeScript + Vite
