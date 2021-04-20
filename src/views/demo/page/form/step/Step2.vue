@@ -4,7 +4,7 @@
     <a-descriptions :column="1" class="mt-5">
       <a-descriptions-item label="付款账户"> ant-design@alipay.com </a-descriptions-item>
       <a-descriptions-item label="收款账户"> test@example.com </a-descriptions-item>
-      <a-descriptions-item label="收款人姓名"> Vben </a-descriptions-item>
+      <a-descriptions-item label="收款人姓名"> Nuxt </a-descriptions-item>
       <a-descriptions-item label="转账金额"> 500元 </a-descriptions-item>
     </a-descriptions>
     <a-divider />
